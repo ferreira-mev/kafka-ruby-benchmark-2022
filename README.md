@@ -1,86 +1,33 @@
-# Benchmark of Kafka frameworks for Ruby
+**(WIP)**
 
-## Results
+This fork of [this repo](https://github.com/imanel/kafka-ruby-benchmark) contains the code for a simple benchmark test comparing the consuming of messages in the `karafka` and `rdkafka-ruby` gems.
 
-Each test is batch of 100k records, at least 10 batches per test.
+# Environment setup
 
-| Implementation   | Mean    | Std. Deviaton  | Ops/s  | Slower |
-| ---------------- | ------- | :------------: | :----: | :----: |
-| Kafka (Batch)    | 1.7135s | 0.1072 (6.26%) | 58 360 | 1.00x  |
-| Karafka (Batch)  | 2.2169s | 0.2456 (11.1%) | 45 108 | 1.29x  |
-| Kafka (Single)   | 2.4647s | 0.1449 (5.88%) | 40 573 | 1.44x  |
-| Phobos           | 2.6068s | 0.1234 (4.73%) | 38 361 | 1.52x  |
-| Karafka (Single) | 2.6166s | 0.2098 (8.02%) | 39 217 | 1.53x  |
-| Racecar          | 3.2057s | 0.1306 (4.07%) | 31 194 | 1.82x  |
+I thought it would have been better to run these tests on a container, but I had some trouble setting up Kafka on Docker so that the endpoint was reachable from the host (yes, I did read some guides and fiddle with a number of settings). I figured it wasn't worth wasting too much time before even getting started, so I resorted to running Kafka locally as I had been doing before, by using
 
-Benchmark of JSON vs AVRO, size 1 of JSON used for benchmarks above. If using AVRO or large messages just adjust above results by difference.
+`zookeeper-server-start.sh config/zookeeper.properties`
 
-|                       | Size 1   | Size 10  | Size 100 | Size 1000 | size 10000 |
-| ----------------------| -------: | -------: | -------: | --------: | ---------: |
-| JSON:                 | 0.285331 | 0.259881 | 0.529220 | 2.562496  | 24.578918  |
-| MultiJSON:            | 0.531967 | 0.560616 | 0.791814 | 3.039967  | 27.899754  |
-| AVRO explicit schema: | 5.467514 | 5.345877 | 5.413890 | 5.663500  |  7.689758  |
-| AVRO implicit schema: | 5.246887 | 5.481632 | 5.447352 | 5.715120  |  7.890285  |
+`kafka-server-start.sh config/server.properties`
 
-## Running Kafka
+(which will, of course, require having Kafka installed (I have version 3.3.1) and having its `bin` directory on your `$PATH`).
 
-This Docker image will expose Kafka on port `9092` and Zookeeper on port `2181`.
+# Running the tests
 
-```
-docker run -d \
-  --name kafka \
-  -p 2181:2181 \
-  -p 9092:9092 \
-  --env ADVERTISED_HOST=127.0.0.1 \
-  --env ADVERTISED_PORT=9092 \
-  spotify/kafka
-```
+## Karafka
 
-## Inserting data for benchmark
+To run the Karafka tests, `cd` into either `karakfa/single` or `karakfa/batch`, as desired, and run
 
-```
-bundle install
-bundle exec rake bench:fill_kafka
-```
+`bundle exec karafka server`.
 
-## Running Kafka Single
+## rdkafka
 
-```
-cd kafka
-bundle exec ruby single.rb
-```
+The `rdkafka` tests can be run simply as regular Ruby programs, by executing
 
-## Running Kafka Batch
+`ruby rdkafka/single.rb`
 
-```
-cd kafka
-bundle exec ruby batch.rb
-```
+or
 
-## Running Karafka Batch
+`ruby rdkafka/batch.rb`.
 
-```
-cd karafka/batch
-bundle exec karafka server
-```
-
-## Running Karafka Single
-
-```
-cd karafka/single
-bundle exec karafka server
-```
-
-## Running Phobos
-
-```
-cd phobos
-bundle exec phobos start -c config/json.yml -b json.rb
-```
-
-## Running Racecar
-
-```
-cd racecar
-bundle exec racecar --require json_consumer JsonConsumer
-```
+Note that there is no set number of messages to receive until the consumets are stopped, so they will carry on polling until manually stopped.

@@ -1,10 +1,19 @@
 # frozen_string_literal: true
 
-source 'http://rubygems.org'
+source "https://rubygems.org"
 
-gem 'avro_turf'
-gem 'karafka'
-gem 'phobos'
-gem 'racecar'
-gem 'rake'
-gem 'ruby-kafka'
+git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+
+# gem "rails"
+
+gem "rdkafka", "~> 0.12.0"
+
+gem "karafka", "~> 2.0"
+
+gem "json", "~> 2.6"
+
+gem "rake", "~> 13.0"
+
+gem "benchmark", "~> 0.2.0"
+
+gem "pry", "~> 0.14.1"
