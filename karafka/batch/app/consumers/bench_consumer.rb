@@ -9,7 +9,7 @@ class BenchConsumer < ApplicationConsumer
   end
 
   def results_path
-    '../../../results.csv'
+    '../../results.csv'
   end
 
   def consume
@@ -18,17 +18,13 @@ class BenchConsumer < ApplicationConsumer
       @@starting_time = Time.now if @@count.zero?
       @@count += 1
 
-      puts @@count
-
       next unless @@count >= 100_000
 
       time_taken = Time.now - @@starting_time
-      puts "Time taken: #{time_taken}"
+
+      puts "#{row_id} read #{@@count} messages in #{time_taken}"
 
       CSV.open(results_path, 'a') do |csv|
-        # FIXME: The flow reaches this block, but doesn't
-        # actually write anything, and pry breakpoints
-        # don't seem to work inside Karakfa consumers
         csv << [row_id, time_taken, @@count]
       end
 

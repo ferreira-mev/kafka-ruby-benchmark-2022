@@ -22,12 +22,12 @@ consumer.each_slice(100) do |batch|
   @count ||= 0
   @starting_time = Time.now if @count.zero?
   @count += batch.size
-  puts @count
 
   next unless @count >= 100_000
 
   time_taken = Time.now - @starting_time
-  puts "Time taken: #{time_taken}"
+
+  puts "#{ROW_ID} read #{@COUNT} messages in #{time_taken}"
 
   CSV.open(RESULTS_PATH, 'a') do |csv|
     csv << [ROW_ID, time_taken, @count]

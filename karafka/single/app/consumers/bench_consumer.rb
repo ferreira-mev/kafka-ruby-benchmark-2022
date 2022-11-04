@@ -1,9 +1,15 @@
 # frozen_string_literal: true
 
+require 'csv'
+
 # Consumer used to consume benchmark messages
 class BenchConsumer < ApplicationConsumer
   def row_id
-    'karafka-batch'
+    'karafka-single'
+  end
+
+  def results_path
+    '../../results.csv'
   end
 
   def consume_one
@@ -15,7 +21,13 @@ class BenchConsumer < ApplicationConsumer
 
     if @@count >= 100_000
       time_taken = Time.now - @@starting_time
-      puts "Time taken: #{time_taken}"
+
+      puts "#{row_id} read #{@@count} messages in #{time_taken}"
+
+      CSV.open(results_path, 'a') do |csv|
+        csv << [row_id, time_taken, @@count]
+      end
+
       @@count = 0
     end
   end
