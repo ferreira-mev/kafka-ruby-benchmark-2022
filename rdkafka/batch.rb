@@ -10,7 +10,7 @@ require_relative 'base_consumer'
 
 class BatchBenchConsumer < BaseConsumer
   def row_id
-    'rdkafka-single'
+    'rdkafka-batch'
   end
 
   def schema

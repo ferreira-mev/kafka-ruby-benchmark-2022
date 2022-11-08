@@ -18,11 +18,11 @@ I thought it would have been better to run these tests on a container, but I had
 
 To run the Karafka tests, `cd` into `karafka` and run
 
-`bundle exec karafka server --consumer_group batch`
+`bundle exec karafka server --consumer_groups batch`
 
 or
 
-`bundle exec karafka server --consumer_group single`,
+`bundle exec karafka server --consumer_groups single`,
 
 as desired.
 

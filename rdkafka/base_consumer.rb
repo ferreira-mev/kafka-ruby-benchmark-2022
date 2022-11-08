@@ -11,7 +11,8 @@ class BaseConsumer
   def initialize(topic = 'kafka_bench_avro', group_id = 'kafka-bench')
     @config = {
       :"bootstrap.servers" => 'localhost:9092',
-      :"group.id" => group_id
+      :"group.id" => group_id,
+      :"auto.offset.reset" => 'earliest'
     }
 
     @consumer = Rdkafka::Config.new(@config).consumer
