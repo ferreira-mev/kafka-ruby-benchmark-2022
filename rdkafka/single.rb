@@ -2,32 +2,40 @@
 
 require 'rdkafka'
 require 'csv'
+require 'avro_turf'
 
-ROW_ID = 'rdkafka-single'
-RESULTS_PATH = 'results.csv'
+require_relative 'base_consumer'
 
-config = {
-  :"bootstrap.servers" => "localhost:9092",
-  :"group.id" => "kafka-bench"
-}
-
-consumer = Rdkafka::Config.new(config).consumer
-consumer.subscribe("kafka_bench_json")
-
-consumer.each do |_message|
-  @count ||= 0
-  @starting_time = Time.now if @count.zero?
-  @count += 1
-
-  next unless @count >= 100_000
-
-  time_taken = Time.now - @starting_time
-
-  puts "#{ROW_ID} read #{@COUNT} messages in #{time_taken}"
-
-  CSV.open(RESULTS_PATH, 'a') do |csv|
-    csv << [ROW_ID, time_taken, @count]
+class SingleBenchConsumer < BaseConsumer
+  def row_id
+    'rdkafka-single'
   end
 
-  @count = 0
+  def schema
+    'address'
+  end
+
+  def poll
+    @consumer.each do |message|
+      @count ||= 0
+      @starting_time = Time.now if @count.zero?
+      @count += 1
+
+      avro.decode(message.payload, schema_name: schema)
+
+      next unless @count >= 100_000
+
+      time_taken = Time.now - @starting_time
+
+      puts "#{row_id} read #{@count} messages in #{time_taken}"
+
+      CSV.open(results_path, 'a') do |csv|
+        csv << [row_id, time_taken, @count]
+      end
+
+      @count = 0
+    end
+  end
 end
+
+SingleBenchConsumer.new.poll
