@@ -1,22 +1,23 @@
 # frozen_string_literal: true
 
 require 'csv'
+require 'avro_turf'
 
 # Consumer used to consume benchmark messages
-class BenchConsumer < ApplicationConsumer
+class BatchBenchConsumer < ApplicationConsumer
   def row_id
     'karafka-batch'
   end
 
-  def results_path
-    '../../results.csv'
-  end
-
   def consume
-    messages.each do |_message|
+    messages.each do |message|
       @@count ||= 0
       @@starting_time = Time.now if @@count.zero?
       @@count += 1
+
+      message.payload
+      # Needed to trigger lazy deserialization; see
+      # https://karafka.io/docs/Deserialization/#lazy-deserialization
 
       next unless @@count >= 100_000
 

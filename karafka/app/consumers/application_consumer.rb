@@ -4,4 +4,7 @@
 # You can rename it if it would conflict with your current code base (in case you're integrating
 # Karafka with other frameworks)
 class ApplicationConsumer < Karafka::BaseConsumer
+  def results_path
+    '../results.csv'
+  end
 end

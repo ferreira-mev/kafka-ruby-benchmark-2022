@@ -17,3 +17,5 @@ gem "rake", "~> 13.0"
 gem "benchmark", "~> 0.2.0"
 
 gem "pry", "~> 0.14.1"
+
+gem "avro_turf", "~> 1.7"

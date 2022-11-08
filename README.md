@@ -16,9 +16,15 @@ I thought it would have been better to run these tests on a container, but I had
 
 ## Karafka
 
-To run the Karafka tests, `cd` into either `karakfa/single` or `karakfa/batch`, as desired, and run
+To run the Karafka tests, `cd` into `karafka` and run
 
-`bundle exec karafka server`.
+`bundle exec karafka server --consumer_group batch`
+
+or
+
+`bundle exec karafka server --consumer_group single`,
+
+as desired.
 
 ## rdkafka
 

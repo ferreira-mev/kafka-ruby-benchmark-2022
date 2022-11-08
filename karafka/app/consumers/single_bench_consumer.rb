@@ -3,13 +3,9 @@
 require 'csv'
 
 # Consumer used to consume benchmark messages
-class BenchConsumer < ApplicationConsumer
+class SingleBenchConsumer < SingleMessageBaseConsumer
   def row_id
     'karafka-single'
-  end
-
-  def results_path
-    '../../results.csv'
   end
 
   def consume_one
@@ -17,7 +13,9 @@ class BenchConsumer < ApplicationConsumer
     @@starting_time = Time.now if @@count.zero?
     @@count += 1
 
-    puts @@count
+    @message.payload
+    # Needed to trigger lazy deserialization; see
+    # https://karafka.io/docs/Deserialization/#lazy-deserialization
 
     if @@count >= 100_000
       time_taken = Time.now - @@starting_time
